@@ -1,0 +1,30 @@
+# version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    
+    ports:
+      - "8050:8080"
+    
+    volumes:
+      - nimbus_data:/app/data
+    
+    environment:
+      - ENV=production
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    
+    ports:
+      - "8081:3000"
+    
+    environment:
+      - API_URL=http://backend:8080
+
+volumes:
+  nimbus_data:

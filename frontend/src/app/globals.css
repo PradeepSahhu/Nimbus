@@ -1,21 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+:root  {
+  --background: 235 0% 95%;
+  --foreground: 235 0% 0%;
+  --card: 235 0% 90%;
+  --card-foreground: 235 0% 10%;
+  --popover: 235 0% 95%;
+  --popover-foreground: 235 95% 0%;
+  --primary: 235 39% 36%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 235 10% 70%;
+  --secondary-foreground: 0 0% 0%;
+  --muted: 197 10% 85%;
+  --muted-foreground: 235 0% 35%;
+  --accent: 197 10% 80%;
+  --accent-foreground: 235 0% 10%;
+  --destructive: 0 50% 30%;
+  --destructive-foreground: 235 0% 90%;
+  --border: 235 20% 50%;
+  --input: 235 20% 18%;
+  --ring: 235 39% 36%;
+  --radius: 0.5rem;
+}
+.dark  {
+  --background: 235 10% 5%;
+  --foreground: 235 0% 90%;
+  --card: 235 0% 0%;
+  --card-foreground: 235 0% 90%;
+  --popover: 235 10% 5%;
+  --popover-foreground: 235 0% 90%;
+  --primary: 235 39% 36%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 235 10% 10%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 197 10% 15%;
+  --muted-foreground: 235 0% 60%;
+  --accent: 197 10% 15%;
+  --accent-foreground: 235 0% 90%;
+  --destructive: 0 50% 30%;
+  --destructive-foreground: 235 0% 90%;
+  --border: 235 20% 18%;
+  --input: 235 20% 18%;
+  --ring: 235 39% 36%;
+  --radius: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+
+@layer base {
+  * {
+    @apply border-border;
   }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
 }
