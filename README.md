@@ -38,7 +38,7 @@ Nimbus is a **self-hosted local file backup server** designed for **personal use
 ## Getting Started
 ### **1. Clone the Repository**
 ```bash
- git clone https://github.com/yourusername/nimbus.git
+ git clone https://github.com/yashpatil74/nimbus.git
  cd nimbus
 ```
 
