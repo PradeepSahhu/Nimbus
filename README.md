@@ -74,7 +74,7 @@ http://localhost:8050  # Backend API
 ---
 
 ## Contributions & Feedback
-This is an open-source project in active development. Feel free to submit issues, suggestions, or contribute!
+This is an open-source project in active development. Feel free to submit issues or suggestions!
 
 **Stay tuned for updates and feature improvements!**
 
