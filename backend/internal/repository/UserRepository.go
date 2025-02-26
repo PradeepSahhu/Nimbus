@@ -47,10 +47,10 @@ func (ur *UserRepository) CreateUser(user *entities.User) error {
 
 	user.ID = uuid.New().String()
 
-	query := `INSERT INTO users (id, email, password, created_at, updated_at) 
-    	      VALUES (?, ?, ?, DATETIME('now'), DATETIME('now'))`
+	query := `INSERT INTO users (id, username, email, password, created_at, updated_at) 
+    	      VALUES (?, ?, ?, ?, DATETIME('now'), DATETIME('now'))`
 
-	_, err = tx.Exec(query, user.ID, user.Email, user.Password)
+	_, err = tx.Exec(query, user.ID, user.Username, user.Email, user.Password)
 	if err != nil {
 		return fmt.Errorf("failed to create user: %v", err)
 	}

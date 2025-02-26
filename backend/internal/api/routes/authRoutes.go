@@ -8,7 +8,7 @@ import (
 func SetupAuthRoutes(router *gin.RouterGroup, authHandler *handlers.AuthHandler) {
 	routerGroup := router.Group("/auth")
 	{
-		routerGroup.POST("/register", nil)
+		routerGroup.POST("/register", authHandler.Register)
 		routerGroup.POST("/login", authHandler.Login)
 	}
 }

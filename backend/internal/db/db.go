@@ -9,9 +9,9 @@ import (
 )
 
 func InitDB() (*sql.DB, error) {
-	dbPath := filepath.Join("data", "nimbus.db")
+	dbPath := filepath.Join("../../data", "nimbus.db")
 
-	if err := os.MkdirAll("data", 0755); err != nil {
+	if err := os.MkdirAll("../../data", 0755); err != nil {
 		return nil, err
 	}
 
