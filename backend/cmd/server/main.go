@@ -2,14 +2,24 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/yashpatil74/nimbus/internal/api/handlers"
 	"github.com/yashpatil74/nimbus/internal/api/routes"
 	"github.com/yashpatil74/nimbus/internal/db"
+	"github.com/yashpatil74/nimbus/internal/repository"
+	"github.com/yashpatil74/nimbus/internal/services"
 )
 
 func main() {
+
+	// Setup
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
 
 	// Database
 	datab, err := db.InitDB()
@@ -23,12 +33,14 @@ func main() {
 	}
 
 	// Repositories
+	UserRepository := repository.NewUserRepository(datab)
 
 	// Services
+	AuthService := services.NewAuthService(UserRepository)
 
 	// Handlers
 	genericHandler := handlers.NewGenericHandler()
-	authHandler := handlers.NewAuthHandler()
+	authHandler := handlers.NewAuthHandler(AuthService)
 
 	router := gin.Default()
 	apiRoute := router.Group("/api")
@@ -37,6 +49,6 @@ func main() {
 		routes.SetupAuthRoutes(apiRoute, authHandler)
 	}
 
-	router.Run(":8080")
+	router.Run(os.Getenv("PORT"))
 
 }

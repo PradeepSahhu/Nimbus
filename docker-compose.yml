@@ -21,23 +21,5 @@ services:
     environment:
       - API_URL=http://backend:8080
 
-  postgres:
-    image: postgres:16
-    container_name: postgres
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${DB_USER:-nimbus} 
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-nimbus}
-      POSTGRES_DB: ${DB_NAME:-nimbus_db} 
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-nimbus} -d ${DB_NAME:-nimbus_db}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
 volumes:
   nimbus_data:
-  postgres_data:
