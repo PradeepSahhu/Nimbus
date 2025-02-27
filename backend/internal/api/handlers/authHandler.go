@@ -38,5 +38,20 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 }
 
 func (h *AuthHandler) Login(ctx *gin.Context) {
-	ctx.JSON(http.StatusCreated, gin.H{"message": "User Logged In successfully"})
+	var requestBody struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	if err := ctx.ShouldBindJSON(&requestBody); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := h.AuthService.Login(requestBody.Email, requestBody.Password)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }

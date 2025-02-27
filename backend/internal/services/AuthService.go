@@ -41,3 +41,22 @@ func (s *AuthService) Register(username string, email string, password string) e
 	}
 	return nil
 }
+
+func (s *AuthService) Login(email string, password string) (string, error) {
+	user, err := s.UserRepository.GetUserByEmail(email)
+	if err != nil {
+		return "", err
+	}
+
+	isValid := utils.CheckHash(password, user.Password)
+	if !isValid {
+		return "", fmt.Errorf("invalid credentials")
+	}
+
+	token, err := utils.GenerateToken(user.ID)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
+}
