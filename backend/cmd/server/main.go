@@ -33,20 +33,26 @@ func main() {
 	}
 
 	// Repositories
+	FolderRepository := repository.NewFolderRepository(datab)
 	UserRepository := repository.NewUserRepository(datab)
+	FileRepository := repository.NewFileRepository(datab)
 
 	// Services
-	AuthService := services.NewAuthService(UserRepository)
+	FolderService := services.NewFolderService(FolderRepository, os.Getenv("STORAGE_PATH"))
+	AuthService := services.NewAuthService(UserRepository, FolderService)
+	FileService := services.NewFileService(FileRepository)
 
 	// Handlers
 	genericHandler := handlers.NewGenericHandler()
 	authHandler := handlers.NewAuthHandler(AuthService)
+	fileHandler := handlers.NewFileHandler(FileService)
 
 	router := gin.Default()
 	apiRoute := router.Group("/api")
 	{
 		routes.SetupGenericRoutes(apiRoute, genericHandler)
 		routes.SetupAuthRoutes(apiRoute, authHandler)
+		routes.SetupFileRoutes(apiRoute, fileHandler)
 	}
 
 	router.Run(os.Getenv("PORT"))

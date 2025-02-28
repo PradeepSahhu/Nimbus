@@ -9,7 +9,7 @@ RUN go mod download
 
 COPY . /app
 
-RUN CGO_ENABLED=0 go build -o nimbus-backend .
+RUN CGO_ENABLED=0 go build -o nimbus-backend ./cmd/server
 
 FROM alpine:latest
 

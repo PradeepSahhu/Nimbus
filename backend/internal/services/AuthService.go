@@ -10,10 +10,12 @@ import (
 
 type AuthService struct {
 	UserRepository *repository.UserRepository
+	FolderService  *FolderService
 }
 
-func NewAuthService(userRepository *repository.UserRepository) *AuthService {
+func NewAuthService(userRepository *repository.UserRepository, folderService *FolderService) *AuthService {
 	return &AuthService{
+		FolderService:  folderService,
 		UserRepository: userRepository,
 	}
 }
@@ -39,6 +41,11 @@ func (s *AuthService) Register(username string, email string, password string) e
 	if err != nil {
 		return err
 	}
+	err = s.FolderService.CreateUserFolder(User.ID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
