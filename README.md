@@ -16,16 +16,13 @@ Nimbus is a **self-hosted local file backup server** designed for **personal use
 ## 🚀 Current Development Progress
 ### **Backend (Golang + SQLite)** ✅
 - [x] Golang backend initialized.
-- [ ] API endpoints for authentication and file handling.
-- [ ] Dockerized backend with persistent volume support.
-- [ ] Implement file versioning.
-- [ ] Implement scheduled backups.
+- [x] API endpoints for authentication.
+- [x] Dockerized backend with persistent volume support.
 
 ### **Frontend (Next.js + Tailwind CSS)** ✅
 - [x] Next.js frontend initialized.
-- [ ] UI designed for file uploads and management.
-- [ ] Connected API to frontend.
-- [ ] Improve UI/UX (drag-and-drop upload, file preview, etc.).
+- [x] Connected UI to API.
+- [x] UI designed for Authentication.
 
 ### **Docker & Deployment** ✅
 - [x] Dockerized backend & frontend.
