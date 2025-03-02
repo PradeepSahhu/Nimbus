@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/yashpatil74/nimbus/internal/api/handlers"
@@ -14,7 +15,6 @@ import (
 )
 
 func main() {
-
 	// Setup
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -48,6 +48,15 @@ func main() {
 	fileHandler := handlers.NewFileHandler(FileService)
 
 	router := gin.Default()
+
+	// CORS middleware
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"0.0.0.0"} // Your frontend URL
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
+	config.AllowCredentials = true
+	router.Use(cors.New(config))
+
 	apiRoute := router.Group("/api")
 	{
 		routes.SetupGenericRoutes(apiRoute, genericHandler)
@@ -56,5 +65,4 @@ func main() {
 	}
 
 	router.Run(os.Getenv("PORT"))
-
 }

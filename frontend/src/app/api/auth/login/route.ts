@@ -47,6 +47,16 @@ export async function POST(request: Request) {
       path: '/',
     });
 
+    successResponse.cookies.set({
+      name: 'auth_token',
+      value: data.token,
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 7, // 1 week in seconds
+      path: '/',
+    });
+    
     return successResponse;
 
   } catch (error) {
