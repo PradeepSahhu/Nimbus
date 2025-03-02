@@ -10,25 +10,23 @@ import (
 
 type AuthService struct {
 	UserRepository *repository.UserRepository
-	FolderService  *FolderService
 }
 
-func NewAuthService(userRepository *repository.UserRepository, folderService *FolderService) *AuthService {
+func NewAuthService(userRepository *repository.UserRepository) *AuthService {
 	return &AuthService{
-		FolderService:  folderService,
 		UserRepository: userRepository,
 	}
 }
 
-func (s *AuthService) Register(username string, email string, password string) error {
+func (s *AuthService) Register(username string, email string, password string) (*entities.User, error) {
 	isEmailValid := utils.CheckValidEmail(email)
 	if !isEmailValid {
-		return fmt.Errorf("invalid email")
+		return nil, fmt.Errorf("invalid email")
 	}
 
 	hashedPassword, err := utils.Hash(password, 12)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	User := &entities.User{
@@ -39,14 +37,10 @@ func (s *AuthService) Register(username string, email string, password string) e
 
 	err = s.UserRepository.CreateUser(User)
 	if err != nil {
-		return err
-	}
-	err = s.FolderService.CreateUserFolder(User.ID)
-	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return User, nil
 }
 
 func (s *AuthService) Login(email string, password string) (string, error) {

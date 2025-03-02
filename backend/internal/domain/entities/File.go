@@ -7,16 +7,20 @@ import (
 )
 
 type File struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	ContentType string    `json:"content_type"`
-	Type        string    `json:"type"`
-	Size        int64     `json:"size"`
-	UserID      string    `json:"user_id"`
-	FolderID    string    `json:"folder_id"`
-	StoragePath string    `json:"storage_path"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID            string    `json:"id"`
+	Name          string    `json:"name"`
+	EncryptedName string    `json:"-"`
+	EncryptionKey string    `json:"-"`
+	EncryptionIV  string    `json:"-"`
+	ContentType   string    `json:"content_type"`
+	Type          string    `json:"type"`
+	Size          int64     `json:"size"`
+	UserID        string    `json:"user_id"`
+	FolderID      string    `json:"folder_id"`
+	StoragePath   string    `json:"-"`
+	IsEncrypted   bool      `json:"is_encrypted"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 func (f *File) GetExtension() string {
@@ -27,22 +31,22 @@ func (f *File) InRootFolder() bool {
 	return f.FolderID == ""
 }
 
-func DetectFileType(contentType string) string {
-	contentType = strings.ToLower(contentType)
+func (f *File) DetectType() {
+	contentType := strings.ToLower(f.ContentType)
 
 	switch {
 	case strings.Contains(contentType, "image/"):
-		return "image"
+		f.Type = "image"
 	case strings.Contains(contentType, "video/"):
-		return "video"
+		f.Type = "video"
 	case strings.Contains(contentType, "audio/"):
-		return "audio"
+		f.Type = "audio"
 	case strings.Contains(contentType, "text/") ||
 		strings.Contains(contentType, "application/pdf") ||
 		strings.Contains(contentType, "application/msword") ||
-		strings.Contains(contentType, "application/vnd.openxmlformats-officedocument"):
-		return "document"
+		strings.Contains(contentType, "application/vnd.openxmlformats"):
+		f.Type = "document"
 	default:
-		return "other"
+		f.Type = "other"
 	}
 }

@@ -38,13 +38,13 @@ func main() {
 	FileRepository := repository.NewFileRepository(datab)
 
 	// Services
-	FolderService := services.NewFolderService(FolderRepository, os.Getenv("STORAGE_PATH"))
-	AuthService := services.NewAuthService(UserRepository, FolderService)
+	FolderService := services.NewFolderService(FolderRepository, `../../data/files`)
+	AuthService := services.NewAuthService(UserRepository)
 	FileService := services.NewFileService(FileRepository)
 
 	// Handlers
 	genericHandler := handlers.NewGenericHandler()
-	authHandler := handlers.NewAuthHandler(AuthService)
+	authHandler := handlers.NewAuthHandler(AuthService, FolderService)
 	fileHandler := handlers.NewFileHandler(FileService)
 
 	router := gin.Default()

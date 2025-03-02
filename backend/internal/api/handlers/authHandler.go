@@ -8,12 +8,14 @@ import (
 )
 
 type AuthHandler struct {
-	AuthService *services.AuthService
+	AuthService   *services.AuthService
+	FolderService *services.FolderService
 }
 
-func NewAuthHandler(authService *services.AuthService) *AuthHandler {
+func NewAuthHandler(authService *services.AuthService, folderService *services.FolderService) *AuthHandler {
 	return &AuthHandler{
-		AuthService: authService,
+		AuthService:   authService,
+		FolderService: folderService,
 	}
 }
 
@@ -29,9 +31,14 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 		return
 	}
 
-	err := h.AuthService.Register(requestBody.Username, requestBody.Email, requestBody.Password)
+	user, err := h.AuthService.Register(requestBody.Username, requestBody.Email, requestBody.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = h.FolderService.CreateUserFolder(user.ID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error})
 		return
 	}
 	ctx.JSON(http.StatusCreated, gin.H{"message": "User Registered successfully"})
