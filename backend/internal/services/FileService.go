@@ -1,8 +1,6 @@
 package services
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -14,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/yashpatil74/nimbus/internal/domain/entities"
 	"github.com/yashpatil74/nimbus/internal/repository"
+	"github.com/yashpatil74/nimbus/internal/utils"
 )
 
 type FileService struct {
@@ -28,6 +27,15 @@ func NewFileService(repo *repository.FileRepository, folderRepo *repository.Fold
 		folderRepo:      folderRepo,
 		baseStoragePath: basePath,
 	}
+}
+
+func (fs *FileService) ListFiles(userID string) ([]*entities.File, error) {
+	files, err := fs.repo.GetFilesByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
 }
 
 func (fs *FileService) UploadFile(userID, folderID string, file *multipart.FileHeader) (*entities.File, error) {
@@ -57,7 +65,7 @@ func (fs *FileService) UploadFile(userID, folderID string, file *multipart.FileH
 
 	fileEntity.DetectType()
 
-	encSuffix, err := generateRandomString(8)
+	encSuffix, err := utils.GenerateRandomString(8)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate secure filename: %w", err)
 	}
@@ -85,7 +93,7 @@ func (fs *FileService) UploadFile(userID, folderID string, file *multipart.FileH
 	defer dst.Close()
 
 	//Encryption (yet to implement)
-	key, iv, err := generateEncryptionKeyAndIV()
+	key, iv, err := utils.GenerateEncryptionKeyAndIV()
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate encryption key and IV: %w", err)
 	}
@@ -110,26 +118,34 @@ func (fs *FileService) UploadFile(userID, folderID string, file *multipart.FileH
 	return fileEntity, nil
 }
 
-func generateRandomString(length int) (string, error) {
-	bytes := make([]byte, length/2) // hex encoding doubles the length
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
+func (fs *FileService) DeleteFile(fileID, userID string) error {
+	file, err := fs.repo.GetFileByID(fileID, userID)
+	if err != nil {
+		return err
 	}
-	return hex.EncodeToString(bytes), nil
+
+	if err := fs.repo.DeleteFile(fileID, userID); err != nil {
+		return err
+	}
+
+	if err := os.Remove(file.StoragePath); err != nil {
+		return fmt.Errorf("failed to delete file: %w", err)
+	}
+
+	return nil
 }
 
-func generateEncryptionKeyAndIV() (string, string, error) {
-	// Generate 32-byte key (for AES-256)
-	key := make([]byte, 32)
-	if _, err := rand.Read(key); err != nil {
-		return "", "", err
+func (fs *FileService) DownloadFile(fileID, userID string) (*os.File, *entities.File, error) {
+	file, err := fs.repo.GetFileByID(fileID, userID)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	// Generate 16-byte IV
-	iv := make([]byte, 16)
-	if _, err := rand.Read(iv); err != nil {
-		return "", "", err
+	filePath := file.StoragePath
+	src, err := os.Open(filePath)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to open file: %w", err)
 	}
 
-	return hex.EncodeToString(key), hex.EncodeToString(iv), nil
+	return src, file, nil
 }

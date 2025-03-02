@@ -52,6 +52,26 @@ func (fr *FileRepository) SaveFile(file *entities.File) error {
 	return nil
 }
 
+func (fr *FileRepository) DeleteFile(fileID string, userID string) error {
+	query := `DELETE FROM files WHERE id = ? AND user_id = ?`
+
+	result, err := fr.db.Exec(query, fileID, userID)
+	if err != nil {
+		return fmt.Errorf("failed to delete file: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("file not found or unauthorized access")
+	}
+
+	return nil
+}
+
 func (fr *FileRepository) GetFileByID(fileID string, userID string) (*entities.File, error) {
 	query := `
         SELECT id, name, encrypted_name, content_type, type, size,
@@ -87,6 +107,54 @@ func (fr *FileRepository) GetFileByID(fileID string, userID string) (*entities.F
 	}
 
 	return file, nil
+}
+
+func (fr *FileRepository) GetFilesByUserID(userID string) ([]*entities.File, error) {
+	query := `
+		SELECT id, name, encrypted_name, content_type, type, size,
+			   user_id, folder_id, storage_path, encryption_key,
+			   encryption_iv, is_encrypted, created_at, updated_at
+		FROM files
+		WHERE user_id = ?
+		ORDER BY name ASC
+	`
+
+	rows, err := fr.db.Query(query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query files: %w", err)
+	}
+	defer rows.Close()
+
+	var files []*entities.File
+	for rows.Next() {
+		file := &entities.File{}
+		err := rows.Scan(
+			&file.ID,
+			&file.Name,
+			&file.EncryptedName,
+			&file.ContentType,
+			&file.Type,
+			&file.Size,
+			&file.UserID,
+			&file.FolderID,
+			&file.StoragePath,
+			&file.EncryptionKey,
+			&file.EncryptionIV,
+			&file.IsEncrypted,
+			&file.CreatedAt,
+			&file.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan file row: %w", err)
+		}
+		files = append(files, file)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("row iteration error: %w", err)
+	}
+
+	return files, nil
 }
 
 func (fr *FileRepository) GetFilesByFolderID(folderID string, userID string) ([]*entities.File, error) {

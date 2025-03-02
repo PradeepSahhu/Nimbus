@@ -11,5 +11,8 @@ func SetupFileRoutes(router *gin.RouterGroup, fileHandler *handlers.FileHandler)
 	fileRoutes.Use(middlewares.AuthMiddleware())
 	{
 		fileRoutes.POST("/upload", fileHandler.UploadFile)
+		fileRoutes.GET("/download/:id", fileHandler.DownloadFile)
+		fileRoutes.GET("/list", fileHandler.ListFiles)
+		fileRoutes.DELETE("/delete/:id", fileHandler.DeleteFile)
 	}
 }
