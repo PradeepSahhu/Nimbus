@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { LogOut, RefreshCw } from 'lucide-react';
@@ -8,33 +8,36 @@ import { toast } from 'react-hot-toast';
 import FileService, { FileItem } from '@/services/fileService';
 import FileCard from '@/components/FileCard';
 import FileUpload from '@/components/FileUpload';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export default function Drive() {
   const router = useRouter();
   const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     setLoading(true);
     try {
       const fetchedFiles = await FileService.listFiles();
       setFiles(fetchedFiles);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching files:', error);
-      if (error?.response?.status === 401) {
+      
+      // Check if it's an Axios error with a response status
+      if (error instanceof AxiosError && error.response?.status === 401) {
         router.push('/auth/login');
         return;
       }
+      
       toast.error('Failed to load files');
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [fetchFiles]);
 
   const handleLogout = async () => {
     try {

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Upload, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import fileService from '@/services/fileService';
+import { AxiosError } from 'axios';
 
 interface FileUploadProps {
   onUploadComplete: () => void;
@@ -42,9 +43,16 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadComplete }) => {
       toast.success('File uploaded successfully');
       setSelectedFile(null);
       onUploadComplete();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Upload error:', error);
-      toast.error(error?.response?.data?.error || 'Failed to upload file');
+      
+      // Type guard to check if the error is an AxiosError
+      if (error instanceof AxiosError) {
+        const errorMessage = error.response?.data?.error || 'Failed to upload file';
+        toast.error(errorMessage);
+      } else {
+        toast.error('An unexpected error occurred during upload');
+      }
     } finally {
       setUploading(false);
     }

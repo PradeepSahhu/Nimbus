@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosProgressEvent } from 'axios';
 import Cookies from 'js-cookie';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
@@ -13,6 +13,11 @@ export interface FileItem {
   updated_at: string;
 }
 
+export interface FileUploadResponse {
+  message: string;
+  file: FileItem;
+}
+
 class FileService {
   private getAuthHeaders() {
     const token = Cookies.get('auth_token') || Cookies.get('token');
@@ -20,10 +25,10 @@ class FileService {
   }
 
   async uploadFile(
-    file: globalThis.File, 
+    file: File, 
     folderId?: string,
-    onProgress?: (progressEvent: any) => void
-  ): Promise<any> {
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<FileUploadResponse> {
     const formData = new FormData();
     formData.append('file', file);
     
@@ -32,7 +37,7 @@ class FileService {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/file/upload`, formData, {
+      const response = await axios.post<FileUploadResponse>(`${API_URL}/file/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           ...this.getAuthHeaders()
@@ -50,7 +55,7 @@ class FileService {
 
   async listFiles(): Promise<FileItem[]> {
     try {
-      const response = await axios.get(`${API_URL}/file/list`, {
+      const response = await axios.get<{ files: FileItem[] }>(`${API_URL}/file/list`, {
         headers: this.getAuthHeaders(),
         withCredentials: true,
       });
@@ -140,4 +145,5 @@ class FileService {
   }
 }
 
-export default new FileService();
+const fileService = new FileService();
+export default fileService;

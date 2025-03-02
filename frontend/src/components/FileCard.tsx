@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Download, Trash2, File, Image, FileText, Video, Music, Archive, Loader2 } from 'lucide-react';
+import { Download, Trash2, File, Image as Imge, FileText, Video, Music, Archive, Loader2 } from 'lucide-react';
 import fileService, { FileItem } from '@/services/fileService';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'react-hot-toast';
@@ -18,7 +18,7 @@ const FileCard: React.FC<FileCardProps> = ({ file, onDelete }) => {
   const getFileIcon = () => {
     switch (file.type) {
       case 'image':
-        return <Image className="h-8 w-8 text-blue-500" />;
+        return <Imge className="h-8 w-8 text-blue-500" />;
       case 'document':
         return <FileText className="h-8 w-8 text-green-500" />;
       case 'video':
