@@ -10,6 +10,6 @@ func SetupFileRoutes(router *gin.RouterGroup, fileHandler *handlers.FileHandler)
 	fileRoutes := router.Group("/file")
 	fileRoutes.Use(middlewares.AuthMiddleware())
 	{
-		fileRoutes.POST("/upload", nil)
+		fileRoutes.POST("/upload", fileHandler.UploadFile)
 	}
 }

@@ -40,7 +40,7 @@ func main() {
 	// Services
 	FolderService := services.NewFolderService(FolderRepository, `../../data/files`)
 	AuthService := services.NewAuthService(UserRepository)
-	FileService := services.NewFileService(FileRepository)
+	FileService := services.NewFileService(FileRepository, FolderRepository, `../../data/files`)
 
 	// Handlers
 	genericHandler := handlers.NewGenericHandler()
